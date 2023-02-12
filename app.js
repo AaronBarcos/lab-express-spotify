@@ -35,17 +35,51 @@ app.get("/", (req, res, next) => {
 app.get("/artist-search", (req, res, next) => {
   const { artist } = req.query;
   spotifyApi
-    .searchArtists( artist )
+    .searchArtists(artist)
     .then((response) => {
       res.render("artist", {
-        artists: response.body.artists.items
-      })
-      console.log(response.body.artists.items[0].images[0]);
+        artists: response.body.artists.items,
+      });
+      console.log(response.body.artists.items);
     })
     .catch((error) => {
       next(error);
     });
 });
+
+app.get("/albums/:id", (req, res, next) => {
+  const { id } = req.params;
+  console.log(id);
+  spotifyApi
+    .getArtistAlbums(id)
+    .then((response) => {
+      res.render(
+        "albums.hbs",
+        {
+          albums: response.body.items,
+        }
+      );
+      console.log(response.body.items);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
+app.get("/tracks/:id", (req, res, next) => {
+  const { id } = req.params
+  console.log(id)
+  spotifyApi.getAlbumTracks(id)
+  .then((response) => {
+    res.render("tracks.hbs", {
+      tracks: response.body.items
+    })
+    console.log(response.body.items[0].preview_url)
+  })
+  .catch((error) => {
+    next(error);
+  })
+})
 
 app.listen(3000, () =>
   console.log("My Spotify project running on port 3000 🎧 🥁 🎸 🔊")
